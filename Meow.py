@@ -12,4 +12,8 @@ print(p)
 print(sf) 
 print(mask) 
 for i in range(1,186): 
- if()
+ if(ma[185-i] != mask[185-i]){
+   s+='1'
+   
+   
+  
