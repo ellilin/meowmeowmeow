@@ -1,38 +1,31 @@
-from math import ceil, sqrt
+from math import log2
+p=102526677961811906920580211001707241513305128309344893762933164504276786687187336910425360502272933495571083994690211509078300511071627688284737647085956258293796865441646256995820654959972553036177349513778107184757466720545892194035117753864426657999718681918021860786042594799071644480068118709261971180971
+sf=70747022812995890763500804315358220117303511952195191404161159680255356955393786577651502323653232683931073666739415569000252256174807170473171465025045939469352101569670024423015009460021098725276855239473168402388552362167917294809504462634032002698416306573405380096029074164893265108235649548373383713543
+k=str()
 
+p=bin(p)[2:]
+hz=[int(i) for i in p]
+pp=int(len(p)*2)-1
+a=[0]*pp
+mask=2**pp
+mask-=sf
+mask=bin(mask)[2:]
 
-def bsgs(g, h, p):
-    '''
-    Solve for x in h = g^x mod p given a prime p.
-    If p is not prime, you shouldn't use BSGS anyway.
-    '''
-    N = ceil(sqrt(p - 1))  # phi(p) is p-1 if p is prime
+for i in range(pp-1, -1, -1):
+    if(mask[i]==str(a[i])):
+        k+='0'
+    else:
+        k+='1'
+        if(i-(pp//2) >= 0):
+            for j in range (i, i-(pp//2)-1, -1):
+                a[j]+=hz[pp//2 - i+j]
+                if(a[j] >= 2):
+                    a[j-1]+=a[j]//2
+                    a[j]=a[j]%2
+    
+            
 
-    # Store hashmap of g^{1...m} (mod p). Baby step.
-    tbl = {pow(g, i, p): i for i in range(N)}
+p=int(p,2)
+k=int((k),2)
+print(log2(p*k+sf))
 
-    # Precompute via Fermat's Little Theorem
-    c = pow(g, N * (p - 2), p)
-    o = c
-    # Search for an equivalence in the table. Giant step.
-    for j in range(N):
-
-        y = (h *o) % p
-        o=o*c
-        if y in tbl:
-            return j * N + tbl[y]
-
-    # Solution not found
-    return None
-
-
-import requests
-import json
-
-r = requests.get('http://10.10.21.10:1176/shared_flag')
-m = json.loads(r.content)
-p = m['p']
-sf = m['shared_flag']
-
-
-print(bsgs(2, sf, p))
